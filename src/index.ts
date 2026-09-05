@@ -1,4 +1,4 @@
-import type { RemoteBuildCachePlugin, ResolveRemoteBuildCacheProps, UploadRemoteBuildCacheProps } from "@expo/config"
+import type { BuildCacheProviderPlugin, ResolveBuildCacheProps, UploadBuildCacheProps } from "@expo/config"
 import fs from "fs-extra"
 import path from "path"
 import { downloadAndMaybeExtractAppAsync } from "./download"
@@ -6,8 +6,8 @@ import { createReleaseAndUploadAsset, getReleaseAssetsByTag } from "./github"
 import { getBuildRunCacheDirectoryPath, isDevClientBuild } from "./helpers"
 import { RunOptions } from "./types"
 
-const resolveRemoteBuildCache = async (
-  { projectRoot, platform, fingerprintHash, runOptions }: ResolveRemoteBuildCacheProps,
+const resolveBuildCache = async (
+  { projectRoot, platform, fingerprintHash, runOptions }: ResolveBuildCacheProps,
   { owner, repo }: { owner: string; repo: string }
 ): Promise<string | null> => {
   if (!runOptions.buildCache) {
@@ -36,8 +36,8 @@ const resolveRemoteBuildCache = async (
   return null
 }
 
-const uploadRemoteBuildCache = async (
-  { projectRoot, fingerprintHash, runOptions, buildPath, platform }: UploadRemoteBuildCacheProps,
+const uploadBuildCache = async (
+  { projectRoot, fingerprintHash, runOptions, buildPath, platform }: UploadBuildCacheProps,
   { owner, repo }: { owner: string; repo: string }
 ): Promise<string | null> => {
   console.log(`Uploading build to Github Releases`)
@@ -64,14 +64,14 @@ function getTagName({
   platform: "ios" | "android"
 }): string {
   const isDevClient = isDevClientBuild({ projectRoot, runOptions })
-  return `fingerprint.${fingerprintHash}${isDevClient || true ? ".dev-client" : ""}.${platform}`
+  return `fingerprint.${fingerprintHash}${isDevClient ? ".dev-client" : ""}.${platform}`
 }
 
-function getCachedAppPath({ fingerprintHash, platform, projectRoot, runOptions }: ResolveRemoteBuildCacheProps): string {
+function getCachedAppPath({ fingerprintHash, platform, projectRoot, runOptions }: ResolveBuildCacheProps): string {
   return path.join(
     getBuildRunCacheDirectoryPath(),
     `${getTagName({ fingerprintHash, projectRoot, runOptions, platform })}.${platform === "ios" ? "app" : "apk"}`
   )
 }
 
-export default { resolveRemoteBuildCache, uploadRemoteBuildCache } satisfies RemoteBuildCachePlugin
+export default { resolveBuildCache, uploadBuildCache } satisfies BuildCacheProviderPlugin

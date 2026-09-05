@@ -1,3 +1,3 @@
-import type { ResolveRemoteBuildCacheProps } from "@expo/config"
+import type { ResolveBuildCacheProps } from "@expo/config"
 
-export type RunOptions = ResolveRemoteBuildCacheProps["runOptions"]
+export type RunOptions = ResolveBuildCacheProps["runOptions"]
